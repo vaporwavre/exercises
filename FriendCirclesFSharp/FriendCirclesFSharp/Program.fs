@@ -12,13 +12,17 @@ let rec dfs(startNode : int, m : int[,], visited : bool[]) =
                                                                                 printfn "%A is friends with %A" startNode i)  
 
 let findCircleNum (m : int[,]) =
-    let result = ref 0
     let visited : bool[] = Array.zeroCreate(m.GetLength(0))
-    m.[0..m.GetLength(0)-1,0..0] |> Seq.cast<int> |> Seq.toArray |> Array.iteri(fun i element -> if not visited.[i] then 
-                                                                                                    printfn "Friend circle %A: " i
-                                                                                                    dfs(i, m, visited)
-                                                                                                    incr result)
-    result.Value
+    let rec innerFindCircleNum(startNode : int, result : int) = 
+        if startNode < m.GetLength(0) && not visited.[startNode] then
+            printfn "Friend circle %A: " startNode
+            dfs(startNode, m, visited)
+            innerFindCircleNum(startNode + 1, result + 1)
+        elif startNode < m.GetLength(0) && visited.[startNode] then
+            innerFindCircleNum(startNode + 1, result)
+        else
+            result
+    innerFindCircleNum(0,0)
 
 [<EntryPoint>]
 let main argv = 
